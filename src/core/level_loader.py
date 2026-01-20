@@ -39,7 +39,7 @@ def load_level(filename):
     objects = tmx_data.get_layer_by_name("Spawners")
     for obj in objects:
         if obj.name == "PlayerStart":
-            spawn_point = (obj.x, obj.y - 64)
+            spawn_point = (obj.x, obj.y)
 
         elif obj.name == "SlimeStart":
             slime_spawns.append((obj.x, obj.y- 32))

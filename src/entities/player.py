@@ -50,6 +50,8 @@ class Player:
         self.animation_timer = 0
         self.animation_speed = 0.08
 
+        self.debug_attack_rect = None
+
         self.load_crouch_sprites("assets/graphics/player/crunching.png", 8)
         self.load_run_sprites("assets/graphics/player/running.png", 4)
         self.load_cast_sprites("assets/graphics/player/casting.png", 6)
@@ -171,7 +173,7 @@ class Player:
                 self.is_crouching = False
                 self.stand_up()
 
-        if self.possible_to_stand:
+        if self.is_standing:
 
             if keys[pygame.K_v] and self.fireball_option and not self.is_casting:
                 self.fireball_ability.trigger()
@@ -184,10 +186,11 @@ class Player:
 
     def can_stand(self, dt, tiles):
         self.possible_to_stand = True
-        top_rectangle = pygame.Rect(self.rect.x, self.rect.y, 32, 32)
+        top_rectangle = pygame.Rect(self.rect.x, self.rect.y - 32, self.rect.width, 32)
         for tile in tiles:
             if top_rectangle.colliderect(tile):
                 self.possible_to_stand = False
+        self.debug_attack_rect = top_rectangle
 
     def stand_up(self):
         if self.rect.height != 64:
@@ -220,6 +223,7 @@ class Player:
                 attack_rect = pygame.Rect(self.rect.right, self.rect.y + 16, 32, 32)
             else:
                 attack_rect = pygame.Rect(self.rect.left - 32, self.rect.y + 16, 32, 32)
+
 
             for enemy in enemies:
                 if attack_rect.colliderect(enemy.rect):
@@ -329,3 +333,10 @@ class Player:
         else:
             flipped_image = pygame.transform.flip(self.image, True, False)
             screen.blit(flipped_image, draw_pos)
+
+        if self.debug_attack_rect:
+            # Tworzymy kopię prostokąta przesuniętą o kamerę
+            debug_pos = self.debug_attack_rect.move(offset)
+
+            # Rysujemy samą ramkę (width=2) na czerwono
+            pygame.draw.rect(screen, (255, 0, 0), debug_pos, 2)

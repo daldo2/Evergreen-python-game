@@ -13,3 +13,6 @@ class Camera:
         desired_x = (config.SCREEN_WIDTH // 2) - target.rect.centerx
         min_offset = -(self.map_width - config.SCREEN_WIDTH)
         self.offset.x = max(min_offset, min(0, desired_x))
+        desired_y = (config.SCREEN_HEIGHT // 2) - target.rect.centery
+        min_offset = -(self.map_height - config.SCREEN_HEIGHT)
+        self.offset.y = max(min_offset, min(0, desired_y))
