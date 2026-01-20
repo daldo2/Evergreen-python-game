@@ -5,13 +5,14 @@ from src.core.level_loader import load_level
 from src.core.camera import Camera
 from src.entities.slime import Slime
 from src.entities.frog import Frog
+from src.entities.manaicon import ManaIcon
 from src.core.ui import UI
 import math
 import random
 
 class GameScene:
     def __init__(self):
-        bg_path = "assets/graphics/background/bg-02.jpg"
+        bg_path = "assets/graphics/background/bg-02.png"
 
         raw_bg = pygame.image.load(bg_path).convert()
         self.background = pygame.transform.scale(raw_bg, (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
@@ -25,6 +26,7 @@ class GameScene:
         spawn_point = data[4]
         slime_spawns = data[5]
         frog_spawns = data[6]
+        mana_spawns = data[7]
 
         spawn_x, spawn_y = spawn_point
         self.projectiles = []
@@ -32,10 +34,13 @@ class GameScene:
         self.ui = UI(self.player)
 
         self.enemies = []
+        self.coins = []
         for pos in slime_spawns:
             self.enemies.append(Slime(pos[0], pos[1]))
         for pos in frog_spawns:
             self.enemies.append(Frog(pos[0], pos[1]))
+        for pos in mana_spawns:
+            self.coins.append(ManaIcon(pos[0], pos[1]))
 
         path = "assets/graphics/tilesets/Grass-001.png"
         self.block_img = pygame.image.load(path).convert()
@@ -87,13 +92,23 @@ class GameScene:
             if self.player.rect.colliderect(enemy.rect):
                 self.player.take_damage(10, enemy.rect)
 
+        for mana in self.coins[:]:
+            if self.player.rect.colliderect(mana.rect):
+                mana.current_hp = 0
+                self.player.current_mp += 30
+
+
         # Removing dead enemies
         self.enemies = [e for e in self.enemies if e.current_hp > 0]
+        self.coins = [e for e in self.coins if e.current_hp > 0]
 
         for p in self.projectiles[:]:
             p.update(dt, self.walls, self.enemies)
             if not p.is_alive:
                 self.projectiles.remove(p)
+
+        for a in self.coins[:]:
+            a.update(dt, self.coins)
 
 
     def draw(self, screen):
@@ -113,6 +128,9 @@ class GameScene:
 
         for p in self.projectiles:
             p.draw(screen, self.camera.offset)
+
+        for a in self.coins[:]:
+            a.draw(screen, self.camera.offset)
 
         # Damage indicator
         if self.player.stun_timer > 0:

@@ -37,5 +37,4 @@ class Ability:
             print(f"Used {self.name}!")
 
     def activate(self):
-        """Override this in child classes."""
         pass

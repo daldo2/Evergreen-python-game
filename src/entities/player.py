@@ -34,8 +34,8 @@ class Player:
 
         self.max_hp = 100
         self.current_hp = 80
-        self.max_mp = 5500
-        self.current_mp = 5000
+        self.max_mp = 100
+        self.current_mp = 0
         self.invincible_timer = 0
         self.invincible_duration = 2.0
         self.stun_timer = 0
@@ -45,6 +45,7 @@ class Player:
         self.frames_crouch = []
         self.frames_cast = []
         self.frames_attack = []
+        self.frames_breath = []
 
         self.frame_index = 0
         self.animation_timer = 0
@@ -56,6 +57,7 @@ class Player:
         self.load_run_sprites("assets/graphics/player/running.png", 4)
         self.load_cast_sprites("assets/graphics/player/casting.png", 6)
         self.load_attack_sprites("assets/graphics/player/attacking.png", 8)
+        self.load_breath_sprites("assets/graphics/player/breathing.png", 3)
         # Default image
         self.image = self.frames_crouch[0]
 
@@ -70,6 +72,17 @@ class Player:
             # Scale to player size
             scaled_frame = pygame.transform.scale(frame, (32, 64))
             self.frames_crouch.append(scaled_frame)
+
+    def load_breath_sprites(self, path, frame_count):
+        sheet = pygame.image.load(path).convert_alpha()
+        frame_width = sheet.get_width() // frame_count
+        frame_height = sheet.get_height()
+
+        for i in range(frame_count):
+            frame = sheet.subsurface((i * frame_width, 0, frame_width, frame_height))
+            # Scale to player size
+            scaled_frame = pygame.transform.scale(frame, (32, 64))
+            self.frames_breath.append(scaled_frame)
 
     def load_run_sprites(self, path, frame_count):
 
@@ -233,10 +246,8 @@ class Player:
 
                     if self.facing_right:
                         enemy.velocity.x = 400
-                        enemy.rect.x += 20
                     else:
                         enemy.velocity.x = -400
-                        enemy.rect.x += -20
                     enemy.velocity.y = -200
 
     def take_damage(self, amount, source_rect):
@@ -308,21 +319,17 @@ class Player:
             if self.frame_index >= len(self.frames_run): self.frame_index = 0
             self.image = self.frames_run[self.frame_index]
 
-        # elif self.is_standing:
-        #     if self.animation_timer >= self.animation_speed:
-        #         self.animation_timer = 0
-        #         if self.frame_index < len(self.frames_run) - 1:
-        #             self.frame_index += 1
-        #         else:
-        #             self.frame_index = 0
-        #
-        #     if self.frame_index >= len(self.frames_cast): self.frame_index = 0
-        #     self.image = self.frames_run[self.frame_index]
         else:
-            if self.rect.height == 64:
-                self.frame_index = 0
-                self.image = self.idle_image
-                self.is_standing = True
+            if self.animation_timer >= self.animation_speed:
+                self.animation_timer = 0
+                if self.frame_index < len(self.frames_breath) - 1:
+                    self.frame_index += 1
+                else:
+                    self.frame_index = 0
+
+            if self.frame_index >= len(self.frames_breath): self.frame_index = 0
+            self.image = self.frames_breath[self.frame_index]
+            self.is_standing = True
 
     def draw(self, screen, offset):
         draw_pos = self.rect.topleft + offset
