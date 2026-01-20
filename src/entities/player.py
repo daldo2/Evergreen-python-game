@@ -25,6 +25,13 @@ class Player:
         self.is_attacking = False
         self.damage_dealt = False
 
+        self.is_dashing = False
+        self.dash_duration = 0.2
+        self.dash_timer = 0
+        self.dash_speed = 600
+        self.dash_cooldown = 0
+        self.dash_cooldown_max = 1.0
+
         self.double_jump_option = True
         self.fireball_option = True
         self.running = False
@@ -117,15 +124,33 @@ class Player:
             self.frames_cast.append(scaled_frame)
 
     def update(self, dt, tiles):
-        # Don't handle input for a short period after taking damage
-        if self.stun_timer > 0:
-            self.stun_timer -= dt
-            # slowing down
-            self.velocity.x *= 0.95
-        else:
-            self.handle_input()
 
-        self.apply_gravity(dt)
+        if self.dash_cooldown > 0:
+            self.dash_cooldown -= dt
+
+        if self.is_dashing:
+            self.dash_timer -= dt
+
+            if self.facing_right:
+                self.velocity.x = self.dash_speed
+            else:
+                self.velocity.x = -self.dash_speed
+
+            self.velocity.y = 0
+
+            if self.dash_timer <= 0:
+                self.is_dashing = False
+                self.velocity.x = 0
+
+        if not self.is_dashing and self.stun_timer <= 0:
+            self.handle_input()
+        elif self.stun_timer > 0:
+            self.stun_timer -= dt
+            self.velocity.x *= 0.95
+
+        if not self.is_dashing:
+            self.apply_gravity(dt)
+
         self.rect, collisions = move_and_slide(self.rect, self.velocity, tiles, dt)
 
         if collisions['right'] or collisions['left']:
@@ -156,6 +181,11 @@ class Player:
         self.velocity.x = 0
 
         self.running = False
+
+        if keys[pygame.K_LSHIFT] and self.dash_cooldown <= 0 and not self.is_attacking and not self.is_casting and not self.is_crouching:
+            self.start_dash()
+            return
+
         if not self.is_casting:
             if keys[pygame.K_LEFT]:
                 self.velocity.x = -self.speed
@@ -250,12 +280,17 @@ class Player:
                         enemy.velocity.x = -400
                     enemy.velocity.y = -200
 
+    def start_dash(self):
+        self.is_dashing = True
+        self.dash_timer = self.dash_duration
+        self.dash_cooldown = self.dash_cooldown_max
+        self.frame_index = 0
+
     def take_damage(self, amount, source_rect):
         if self.invincible_timer <= 0:
             self.current_hp -= amount
             self.invincible_timer = self.invincible_duration
             self.stun_timer = 1
-            print(f"Ouch! HP: {self.current_hp}")
 
             # Knock back
             self.velocity.y = -400
@@ -268,9 +303,7 @@ class Player:
         self.animation_timer += dt
 
         if self.is_attacking:
-
             attack_speed = 0.035
-
             if self.animation_timer >= attack_speed:
                 self.animation_timer = 0
                 if self.frame_index < len(self.frames_attack) - 1:
@@ -279,10 +312,10 @@ class Player:
                     self.is_attacking = False
                     self.damage_dealt = False
                     self.frame_index = 0
-
             if self.frame_index >= len(self.frames_attack):
                 self.frame_index = 0
             self.image = self.frames_attack[self.frame_index]
+
 
         elif self.is_casting:
             if self.animation_timer >= self.animation_speed:
@@ -292,14 +325,13 @@ class Player:
                 else:
                     self.is_casting = False
                     self.frame_index = 0
-
             if self.frame_index >= len(self.frames_cast): self.frame_index = 0
             self.image = self.frames_cast[self.frame_index]
+
 
         elif self.is_crouching:
             if self.animation_timer >= self.animation_speed:
                 self.animation_timer = 0
-
                 # Increment frame only if we haven't reached the end
                 if self.frame_index < len(self.frames_crouch) - 1:
                     self.frame_index += 1
@@ -308,6 +340,7 @@ class Player:
             if self.frame_index >= len(self.frames_crouch): self.frame_index = 0
             self.image = self.frames_crouch[self.frame_index]
 
+
         elif self.running:
             if self.animation_timer >= self.animation_speed:
                 self.animation_timer = 0
@@ -315,9 +348,9 @@ class Player:
                     self.frame_index += 1
                 else :
                     self.frame_index = 0
-
             if self.frame_index >= len(self.frames_run): self.frame_index = 0
             self.image = self.frames_run[self.frame_index]
+
 
         else:
             if self.animation_timer >= self.animation_speed:
@@ -348,5 +381,4 @@ class Player:
             screen.blit(flipped_image, draw_pos)
 
         if self.debug_attack_rect:
-            # Tworzymy kopię prostokąta przesuniętą o kamerę
             debug_pos = self.debug_attack_rect.move(offset)

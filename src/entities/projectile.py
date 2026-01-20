@@ -55,8 +55,7 @@ class Projectile:
                 if not self.is_dying:
                     self.is_dying = True
                     self.frame_index = 0
-                    print("Enemy Hit!")
-                    enemy.current_hp -= 20  # Zwiększ obrażenia testowo
+                    enemy.current_hp -= 20
         self.animate(dt)
 
     def animate(self, dt):
