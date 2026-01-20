@@ -18,4 +18,3 @@ class Fireball(Ability):
 
         new_fireball = Projectile(spawn_x, spawn_y, direction)
         self.projectile_list.append(new_fireball)
-        print("Fireball Cast!")

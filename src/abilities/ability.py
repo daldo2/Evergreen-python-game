@@ -1,6 +1,6 @@
 import pygame
 
-# Szkielet kazdej umiejetnosci
+
 class Ability:
     def __init__(self, owner, name, cooldown = 1.0, mana_cost = 10):
         self.owner = owner
@@ -19,7 +19,6 @@ class Ability:
 
         if hasattr(self.owner, 'current_mp'):
             if self.owner.current_mp < self.mana_cost:
-                print("Not enough mana!")
                 return False
 
         return True
@@ -29,12 +28,9 @@ class Ability:
             if hasattr(self.owner, 'current_mp'):
                 self.owner.current_mp -= self.mana_cost
 
-            # Start Cooldown
             self.current_cooldown = self.cooldown
 
-            # Execute actual logic
             self.activate()
-            print(f"Used {self.name}!")
 
     def activate(self):
         pass
