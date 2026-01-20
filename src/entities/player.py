@@ -230,7 +230,13 @@ class Player:
                     enemy.current_hp -= 1
                     self.damage_dealt = True
 
-                    enemy.velocity.x = 400 if self.facing_right else -400
+
+                    if self.facing_right:
+                        enemy.velocity.x = 400
+                        enemy.rect.x += 20
+                    else:
+                        enemy.velocity.x = -400
+                        enemy.rect.x += -20
                     enemy.velocity.y = -200
 
     def take_damage(self, amount, source_rect):
@@ -337,6 +343,3 @@ class Player:
         if self.debug_attack_rect:
             # Tworzymy kopię prostokąta przesuniętą o kamerę
             debug_pos = self.debug_attack_rect.move(offset)
-
-            # Rysujemy samą ramkę (width=2) na czerwono
-            pygame.draw.rect(screen, (255, 0, 0), debug_pos, 2)
