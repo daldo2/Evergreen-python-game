@@ -28,10 +28,14 @@ class GameScene:
         frog_spawns = data[6]
         mana_spawns = data[7]
 
+        self.win_zone = data[8]
+        self.has_won = False
+
         spawn_x, spawn_y = spawn_point
         self.projectiles = []
         self.player = Player(spawn_x, spawn_y,self.projectiles)
         self.ui = UI(self.player)
+        self.char_is_dead = False
 
         self.enemies = []
         self.coins = []
@@ -73,21 +77,24 @@ class GameScene:
                 print("Pauza (TODO)")
 
     def update(self, dt):
+        if self.player.current_hp <= 0:
+            self.char_is_dead = True
+            pass
         self.player.update(dt, self.walls)
         self.camera.follow(self.player)
         self.player.check_attack_hit(self.enemies)
 
-        # Działa tylko wtedy, gdy gracz jest ogłuszony
+
         if self.player.stun_timer > 0:
             intensity = 1
             shake_x = 0.1 * random.randint(-intensity, intensity)
             shake_y = 0.1 * random.randint(-intensity, intensity)
             self.camera.offset.x += shake_x
 
-        # Update Enemies
+
         for enemy in self.enemies:
             enemy.update(dt, self.walls)
-        # check if player touches other
+
         for enemy in self.enemies:
             if self.player.rect.colliderect(enemy.rect):
                 self.player.take_damage(10, enemy.rect)
@@ -97,8 +104,10 @@ class GameScene:
                 mana.current_hp = 0
                 self.player.current_mp += 30
 
+        if self.win_zone:
+            if self.player.rect.colliderect(self.win_zone):
+                self.has_won = True
 
-        # Removing dead enemies
         self.enemies = [e for e in self.enemies if e.current_hp > 0]
         self.coins = [e for e in self.coins if e.current_hp > 0]
 

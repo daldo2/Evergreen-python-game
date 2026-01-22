@@ -14,6 +14,7 @@ def load_level(filename):
     slime_spawns = []
     frog_spawns = []
     mana_spawns = []
+    win_zone = None
 
 
     # 2. Iterate through "Terrain" layer to create Walls
@@ -51,7 +52,10 @@ def load_level(filename):
         elif obj.name == "ManaStart":
             mana_spawns.append((obj.x, obj.y -32))
 
+        if obj.name == "WinZone":
+            win_zone = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
+
 
 
     # Return the image of the map (visuals) and the physics (walls/spawn)
-    return tmx_data, walls,hazards, visuals, spawn_point, slime_spawns, frog_spawns, mana_spawns
+    return tmx_data, walls,hazards, visuals, spawn_point, slime_spawns, frog_spawns, mana_spawns, win_zone

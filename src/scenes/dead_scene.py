@@ -1,9 +1,9 @@
 import pygame
 from src import config
 
-class MenuScene:
+class DeadScene:
     def __init__(self):
-        path = "assets/graphics/background/welcome.png"
+        path = "assets/graphics/background/dead.jpg"
         raw_img = pygame.image.load(path).convert()
         self.image = pygame.transform.scale(raw_img, (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 
@@ -16,5 +16,6 @@ class MenuScene:
 
     def update(self, dt):
         pass
+
     def draw(self,screen):
         screen.blit(self.image, (0, 0))

@@ -40,7 +40,7 @@ class Player:
         self.fireball_ability = Fireball(self, projectile_list)
 
         self.max_hp = 100
-        self.current_hp = 80
+        self.current_hp = 10
         self.max_mp = 100
         self.current_mp = 0
         self.invincible_timer = 0
@@ -124,7 +124,6 @@ class Player:
             self.frames_cast.append(scaled_frame)
 
     def update(self, dt, tiles):
-
         if self.dash_cooldown > 0:
             self.dash_cooldown -= dt
 

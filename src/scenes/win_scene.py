@@ -1,7 +1,7 @@
 import pygame
 from src import config
 
-class MenuScene:
+class WinScene:
     def __init__(self):
         path = "assets/graphics/background/welcome.png"
         raw_img = pygame.image.load(path).convert()
