@@ -2,7 +2,25 @@ import pygame
 from src import config
 
 class ManaIcon:
+    """
+    Represents a collectible Mana item in the game world.
+
+    This entity is stationary but animated. It does not apply physics (gravity)
+    but checks for collisions with the player in the main GameScene loop to
+    restore MP.
+
+    Attributes:
+        rect: The hit box for collision detection.
+        current_hp: Acts as a state flag. 1 (Uncollected), 0 (Collected).
+    """
     def __init__(self, x, y):
+        """
+        Initialize the ManaIcon.
+
+        Args:
+            x : X coordinate in the world.
+            y: Y coordinate in the world.
+        """
         self.rect = pygame.Rect(x, y, 32, 32)
         self.frames = []
         self.frame_index = 0
@@ -12,13 +30,25 @@ class ManaIcon:
         self.image = self.frames[0]
         self.current_hp = 1
 
-
-
     def update(self, dt, tiles):
+        """
+        Update the item's state.
+
+        Args:
+            dt: Delta time in seconds.
+            tiles: Unused here, but kept for compatibility with other entity update signatures.
+        """
         safe_dt = min(dt, 0.05)
         self.animate(safe_dt)
 
     def load_sprites(self, path, frame_count):
+        """
+        Load and slice the sprite sheet.
+
+        Args:
+            path: Path to the image file.
+            frame_count: number of frames in the row.
+        """
         sheet = pygame.image.load(path).convert_alpha()
         sheet_width = sheet.get_width()
         sheet_height = sheet.get_height()
@@ -31,6 +61,9 @@ class ManaIcon:
             self.frames.append(scaled_frame)
 
     def animate(self, dt):
+        """
+        Cycle through animation frames.
+        """
         self.animation_timer += dt
         if self.animation_timer >= self.animation_speed:
             self.animation_timer = 0
@@ -43,5 +76,12 @@ class ManaIcon:
 
 
     def draw(self, screen, offset):
+        """
+        Render the item relative to the camera.
+
+        Args:
+            screen: Main display surface.
+            offset: Camera offset vector.
+        """
         draw_pos = self.rect.topleft + offset
         screen.blit(self.image, draw_pos)

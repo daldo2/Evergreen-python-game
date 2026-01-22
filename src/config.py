@@ -7,5 +7,5 @@ GRAVITY = 1000
 JUMP_FORCE = -400
 TILE_SIZE = 32
 
-# Kolory
+# Colours
 COLOR_BG = (20, 20, 30)

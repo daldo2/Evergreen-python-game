@@ -1,9 +1,29 @@
 import pygame
-from src import config
-
 
 class Projectile:
+    """
+        Represents a moving projectile fired by an entity.
+
+        The projectile has two states:
+        1. Flying: Moves in a straight line until it hits a wall, an enemy, or expires.
+        2. Dying: Plays an impact/explosion animation before being removed.
+
+        Attributes:
+            rect: The physics hitbox.
+            direction: 1 for right, -1 for left.
+            is_alive: Flag to tell the main loop if this object should be removed.
+            is_dying: Flag indicating the impact animation is playing.
+        """
+
     def __init__(self, x, y, direction):
+        """
+        Initialize the projectile.
+
+        Args:
+            x: Starting X coordinate.
+            y: Starting Y coordinate.
+            direction: Direction of travel (1 for Right, -1 for Left).
+        """
         self.rect = pygame.Rect(x, y + 10, 10, 10)
         self.direction = direction  # 1 (Right) or -1 (Left)
         self.speed = 400
@@ -20,7 +40,16 @@ class Projectile:
             self.image = self.frames_flying[0]
 
     def load_fireball_animation(self, path, frame_count):
+        """
+        Load and slice the sprite sheet, separating flying and dying frames.
 
+        Assumes the first half of the frames are for flying and the second half
+        are for the impact/explosion animation.
+
+        Args:
+            path: File path to the sprite sheet.
+            frame_count: Total number of frames in the sheet.
+        """
         sheet = pygame.image.load(path).convert_alpha()
         frame_width = sheet.get_width() // frame_count
         frame_height = sheet.get_height()
@@ -36,6 +65,17 @@ class Projectile:
 
 
     def update(self, dt, walls, enemies):
+        """
+        Update position, check collisions, and handle lifetime.
+
+        If the projectile hits a wall or enemy, it stops moving and enters the
+        'dying' state to play the explosion animation.
+
+        Args:
+            dt: Delta time in seconds.
+            walls: List of wall rectangles to check for collisions.
+            enemies: list of enemy entities to check for hits.
+        """
         self.lifetime -= dt
         if self.lifetime <= 0:
             self.is_dying = True
@@ -59,6 +99,15 @@ class Projectile:
         self.animate(dt)
 
     def animate(self, dt):
+        """
+        Advance the animation frames.
+
+        If dying, plays the explosion animation once and then marks is_alive as False.
+        If flying, loops the flight animation.
+
+        Args:
+            dt: Delta time in seconds.
+        """
         self.animation_timer += dt
         if self.is_alive and not self.is_dying:
             if self.animation_timer >= self.animation_speed:
@@ -71,7 +120,6 @@ class Projectile:
             self.image = self.frames_flying[self.frame_index]
 
         elif self.is_dying:
-
             if self.animation_timer >= self.animation_speed:
                 self.animation_timer = 0
 
@@ -82,6 +130,16 @@ class Projectile:
             self.image = self.frames_dying[self.frame_index]
 
     def draw(self, screen, offset):
+        """
+        Render the projectile relative to the camera.
+
+        Applies a center offset because the sprite is larger than the
+        physics hitbox.
+
+        Args:
+            screen: Main display surface.
+            offset: Camera offset vector.
+        """
         center_offset = pygame.Vector2(-24, -10)
         draw_pos = self.rect.topleft + offset + center_offset
 

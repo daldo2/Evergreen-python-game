@@ -6,7 +6,34 @@ from src.scenes.menu_scene import MenuScene
 from src.scenes.dead_scene import DeadScene
 from src.scenes.win_scene import WinScene
 
+"""
+Main entry point for the 'Evergreen' game project.
+
+This module handles the core game loop, window initialization, global display scaling,
+and the high-level State Machine that switches between different scenes (Menu, Game, Dead, Win).
+"""
+
 def main():
+    """
+    Initialize the game engine, display window, and run the main application loop.
+
+    Responsibilities:
+    1. Display Setup:
+       - Detects the user's monitor resolution.
+       - Creates a 'virtual' low-resolution surface for pixel-art rendering.
+       - Calculates the scaling factor to fit the virtual surface onto the full screen
+         while maintaining the correct aspect ratio.
+
+    2. State Machine:
+       - Manages the 'current_state' string ("MENU", "GAME", "DEAD", "WIN").
+       - Routes input, update, and draw calls to the active scene.
+       - Handles transitions.
+
+    3. Game Loop:
+       - Calculates Delta Time (dt) for framerate-independent movement.
+       - Handles the Quit event.
+       - Renders the low-res game surface, scales it up, and blits it to the monitor.
+    """
     pygame.init()
 
     monitor_info = pygame.display.Info()
@@ -82,7 +109,6 @@ def main():
                 sys.exit()
 
 
-
         if current_state == "MENU":
             menu_scene.update(dt)
         elif current_state == "GAME":
@@ -110,7 +136,6 @@ def main():
 
     pygame.quit()
     sys.exit()
-
 
 if __name__ == "__main__":
     main()

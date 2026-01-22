@@ -2,9 +2,29 @@ import pygame
 import pytmx
 from src import config
 
-
 def load_level(filename):
-    # 1. Load the TMX file data
+    """
+    Parses a Tiled Map Editor file to extract game world data.
+
+    This function loads the map using pytmx and iterates through specific layers
+    to generate physics objects, rendering data,
+    and spawn coordinates for entities.
+
+    Args:
+        filename: The relative file path to the .tmx map file.
+
+    Returns:
+        tuple: A collection of level data in the following order:
+            1. tmx_data : The raw map object from pytmx.
+            2. walls: A list of collision rectangles for solid terrain.
+            3. hazards: A list of hazard rectangles.
+            4. visuals: A list of tuples for drawing the terrain.
+            5. spawn_point: The (x, y) starting coordinates for the player.
+            6. slime_spawns: List of (x, y) coordinates for Slime enemies.
+            7. frog_spawns: List of (x, y) coordinates for Frog enemies.
+            8. mana_spawns: List of (x, y) coordinates for Manas.
+            9. win_zone: The collision zone that triggers the win state.
+    """
     tmx_data = pytmx.util_pygame.load_pygame(filename)
 
     walls = []
@@ -19,21 +39,16 @@ def load_level(filename):
     layer = tmx_data.get_layer_by_name("Terrain")
 
     if layer:
-        # Iterate over x, y coordinates and the image (gid)
         for x, y, gid in layer:
-            # If gid is not 0 (0 means empty air)
             if gid != 0:
-                # Calculate pixel position
                 pixel_x = x * config.TILE_SIZE
                 pixel_y = y * config.TILE_SIZE
 
-                # Create a physical rectangle for physics
                 rect = pygame.Rect(pixel_x, pixel_y, config.TILE_SIZE, config.TILE_SIZE)
                 walls.append(rect)
                 image = tmx_data.get_tile_image_by_gid(gid)
                 visuals.append((image, rect))
 
-    # 3. Iterate through "Spawns" object layer
 
     objects = tmx_data.get_layer_by_name("Spawners")
     for obj in objects:
@@ -53,6 +68,4 @@ def load_level(filename):
             win_zone = pygame.Rect(obj.x, obj.y, obj.width, obj.height)
 
 
-
-    # Return the image of the map (visuals) and the physics (walls/spawn)
     return tmx_data, walls,hazards, visuals, spawn_point, slime_spawns, frog_spawns, mana_spawns, win_zone
