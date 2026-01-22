@@ -17,6 +17,15 @@ class GameScene:
         raw_bg = pygame.image.load(bg_path).convert()
         self.background = pygame.transform.scale(raw_bg, (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
 
+        music_path = "assets/sounds/music/level_theme.mp3"
+        pygame.mixer.music.load(music_path)
+        pygame.mixer.music.set_volume(0.25)
+        pygame.mixer.music.play(-1)
+        self.collect_sfx = pygame.mixer.Sound("assets/sounds/sfx/pickup.wav")
+        self.collect_sfx.set_volume(0.4)
+        self.respawn_sfx = pygame.mixer.Sound("assets/sounds/sfx/win.wav")
+        self.respawn_sfx.set_volume(0.3)
+        self.respawn_sfx.play()
 
         data = load_level("assets/levels/level1.tmx")
         self.tmx_data = data[0]
@@ -103,6 +112,7 @@ class GameScene:
             if self.player.rect.colliderect(mana.rect):
                 mana.current_hp = 0
                 self.player.current_mp += 30
+                self.collect_sfx.play()
 
         if self.win_zone:
             if self.player.rect.colliderect(self.win_zone):
@@ -125,7 +135,6 @@ class GameScene:
         screen.blit(self.background, (0, 0))
 
         for image, rect in self.visuals:
-            # Oblicz pozycję z uwzględnieniem kamery
             draw_pos = rect.topleft + self.camera.offset
             if -64 < draw_pos.x < config.SCREEN_WIDTH + 64 and -64 < draw_pos.y < config.SCREEN_HEIGHT + 64:
                 screen.blit(image, draw_pos)

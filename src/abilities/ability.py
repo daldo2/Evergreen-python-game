@@ -25,6 +25,7 @@ class Ability:
 
     def trigger(self):
         if self.can_cast():
+
             if hasattr(self.owner, 'current_mp'):
                 self.owner.current_mp -= self.mana_cost
 

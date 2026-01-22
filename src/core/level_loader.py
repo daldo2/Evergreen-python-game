@@ -16,9 +16,6 @@ def load_level(filename):
     mana_spawns = []
     win_zone = None
 
-
-    # 2. Iterate through "Terrain" layer to create Walls
-    # We look for the layer named 'Terrain'
     layer = tmx_data.get_layer_by_name("Terrain")
 
     if layer:

@@ -6,7 +6,9 @@ class WinScene:
         path = "assets/graphics/background/welcome.png"
         raw_img = pygame.image.load(path).convert()
         self.image = pygame.transform.scale(raw_img, (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
-
+        self.collect_sfx = pygame.mixer.Sound("assets/sounds/sfx/win.wav")
+        self.collect_sfx.set_volume(0.4)
+        self.collect_sfx.play()
         self.finished = False
 
     def handle_input(self, event):

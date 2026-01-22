@@ -13,7 +13,6 @@ class Player:
 
         self.velocity = pygame.Vector2(0, 0)
         self.speed = 200
-
         self.is_grounded = False
         self.facing_right = True
         self.jump_pressed = False
@@ -24,8 +23,8 @@ class Player:
         self.is_casting = False
         self.is_attacking = False
         self.damage_dealt = False
-
         self.is_dashing = False
+
         self.dash_duration = 0.2
         self.dash_timer = 0
         self.dash_speed = 600
@@ -39,9 +38,9 @@ class Player:
         self.fireball_cooldown = 5
         self.fireball_ability = Fireball(self, projectile_list)
 
-        self.max_hp = 100
-        self.current_hp = 10
-        self.max_mp = 100
+        self.max_hp = 50
+        self.current_hp = 30
+        self.max_mp = 50
         self.current_mp = 0
         self.invincible_timer = 0
         self.invincible_duration = 2.0
@@ -65,6 +64,14 @@ class Player:
         self.load_cast_sprites("assets/graphics/player/casting.png", 6)
         self.load_attack_sprites("assets/graphics/player/attacking.png", 8)
         self.load_breath_sprites("assets/graphics/player/breathing.png", 3)
+
+        self.attack_sfx = pygame.mixer.Sound("assets/sounds/sfx/attack.wav")
+        self.attack_sfx.set_volume(0.3)
+        self.dash_sfx = pygame.mixer.Sound("assets/sounds/sfx/jump.wav")
+        self.dash_sfx.set_volume(0.2)
+        self.jump_sfx = pygame.mixer.Sound("assets/sounds/sfx/dash.wav")
+        self.jump_sfx.set_volume(0.2)
+
         # Default image
         self.image = self.frames_crouch[0]
 
@@ -225,6 +232,7 @@ class Player:
             if keys[pygame.K_x] and not self.is_attacking and not self.is_casting:
                 self.frame_index = 0
                 self.is_attacking = True
+                self.attack_sfx.play()
 
     def can_stand(self, dt, tiles):
         self.possible_to_stand = True
@@ -254,6 +262,7 @@ class Player:
         self.velocity.y += current_gravity * dt
 
     def jump(self):
+        self.jump_sfx.play()
         self.velocity.y = config.JUMP_FORCE
 
     def check_attack_hit(self, enemies):
@@ -280,6 +289,7 @@ class Player:
                     enemy.velocity.y = -200
 
     def start_dash(self):
+        self.dash_sfx.play()
         self.is_dashing = True
         self.dash_timer = self.dash_duration
         self.dash_cooldown = self.dash_cooldown_max
