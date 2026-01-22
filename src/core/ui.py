@@ -20,7 +20,7 @@ class UI:
         self.bar_width = 100
         self.bar_height = 12
         self.hp_color = (200, 40, 40)
-        self.mp_color = (40, 40, 200)
+        self.mp_color = (62, 134, 250)
         self.bg_color = (30, 30, 30)
 
     def draw(self, screen):

@@ -15,7 +15,7 @@ class WinScene:
         Loads the victory background image, scales it,
         and plays the win sound effect.
         """
-        path = "assets/graphics/background/welcome.png"
+        path = "assets/graphics/background/win.jpg"
         raw_img = pygame.image.load(path).convert()
         self.image = pygame.transform.scale(raw_img, (config.SCREEN_WIDTH, config.SCREEN_HEIGHT))
         self.collect_sfx = pygame.mixer.Sound("assets/sounds/sfx/win.wav")

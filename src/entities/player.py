@@ -63,7 +63,7 @@ class Player:
         self.fireball_cooldown = 5
         self.fireball_ability = Fireball(self, projectile_list)
 
-        self.max_hp = 50
+        self.max_hp = 30
         self.current_hp = 30
         self.max_mp = 50
         self.current_mp = 0
@@ -90,11 +90,11 @@ class Player:
         self.load_attack_sprites("assets/graphics/player/attacking.png", 8)
         self.load_breath_sprites("assets/graphics/player/breathing.png", 3)
         self.attack_sfx = pygame.mixer.Sound("assets/sounds/sfx/attack.wav")
-        self.attack_sfx.set_volume(0.3)
+        self.attack_sfx.set_volume(0.2)
         self.dash_sfx = pygame.mixer.Sound("assets/sounds/sfx/jump.wav")
-        self.dash_sfx.set_volume(0.2)
+        self.dash_sfx.set_volume(0.1)
         self.jump_sfx = pygame.mixer.Sound("assets/sounds/sfx/dash.wav")
-        self.jump_sfx.set_volume(0.2)
+        self.jump_sfx.set_volume(0.15)
 
         # Default image
         self.image = self.frames_crouch[0]

@@ -104,6 +104,7 @@ def main():
                 current_state = "WIN"
 
         if current_state == "WIN":
+            pygame.mixer.music.stop()
             if win_scene.finished:
                 pygame.quit()
                 sys.exit()

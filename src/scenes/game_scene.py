@@ -42,12 +42,12 @@ class GameScene:
 
         music_path = "assets/sounds/music/level_theme.mp3"
         pygame.mixer.music.load(music_path)
-        pygame.mixer.music.set_volume(0.15)
+        pygame.mixer.music.set_volume(0.10)
         pygame.mixer.music.play(-1)
         self.collect_sfx = pygame.mixer.Sound("assets/sounds/sfx/pickup.wav")
-        self.collect_sfx.set_volume(0.4)
+        self.collect_sfx.set_volume(0.3)
         self.respawn_sfx = pygame.mixer.Sound("assets/sounds/sfx/win.wav")
-        self.respawn_sfx.set_volume(0.3)
+        self.respawn_sfx.set_volume(0.2)
         self.respawn_sfx.play()
 
         data = load_level("assets/levels/level1.tmx")
@@ -141,7 +141,7 @@ class GameScene:
         for mana in self.coins[:]:
             if self.player.rect.colliderect(mana.rect):
                 mana.current_hp = 0
-                self.player.current_mp += 30
+                self.player.current_mp += 20
                 self.collect_sfx.play()
 
         if self.win_zone:
